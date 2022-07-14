@@ -40,11 +40,21 @@ export default function useNotice(options: UseNoticeOptions = {}) {
             if (addNotice) {
                 const loadingNotice = addNotice(loading, { icon: <Loading />, autoRemove: false, ...loadingOptions });
                 asyncFunc().then(() => {
-                    loadingNotice.set({ content: success, icon: <Success /> });
+                    const isObj = typeof success === 'object' && success !== null;
+                    if (isObj) {
+                        loadingNotice.set({ icon: <Success />, ...success });
+                    } else {
+                        loadingNotice.set({ icon: <Success />, content: success });
+                    }
+                    setTimeout(() => loadingNotice.remove(), isObj ? (success.duration || 1500) : 1500);
                 }).catch(() => {
-                    loadingNotice.set({ content: error, icon: <Error /> });
-                }).finally(() => {
-                    setTimeout(() => loadingNotice.remove(), 1000);
+                    const isObj = typeof error === 'object' && error !== null;
+                    if (isObj) {
+                        loadingNotice.set({ icon: <Error />, ...error });
+                    } else {
+                        loadingNotice.set({ content: error, icon: <Error /> });
+                    }
+                    setTimeout(() => loadingNotice.remove(), isObj ? (error.duration || 1500) : 1500);
                 });
             }
         };

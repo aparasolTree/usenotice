@@ -38,11 +38,15 @@ export default function useNoticer() {
             const newNotice = cretaeNotice(content, { ...context, ...opts });
             setNotices((prev) => [newNotice, ...prev]);
             newNotice.remove = () => hideNotice(newNotice.id);
-            newNotice.set = ({ content, icon }) => setNotices((prev) => {
+            newNotice.set = ({
+                content, icon, animate, duration,
+            }) => setNotices((prev) => {
                 const notice = prev.find(({ id }) => id === newNotice.id);
                 if (notice) {
-                    notice.content = content;
-                    notice.icon = icon;
+                    content && (notice.content = content);
+                    icon && (notice.icon = icon);
+                    animate && (notice.animate = animate);
+                    duration && (notice.duration = duration);
                 }
 
                 return [...prev];

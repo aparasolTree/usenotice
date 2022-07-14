@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNoticeContext } from '../core/context';
 import type { Notice as NoticeItem } from '../../src/types';
 
 const NoticeContainer = styled.div`
@@ -16,12 +17,11 @@ const NoticeContainer = styled.div`
 `;
 
 export default function Notice({ notice }: { notice: NoticeItem }) {
-    const {
-        content, icon, remove,
-    } = notice;
+    const { style, className } = useNoticeContext();
+    const { content, icon, remove } = notice;
 
     return (
-        <NoticeContainer>
+        <NoticeContainer style={style} className={className}>
             {typeof content === 'function' ? content(remove) : (
                 <>
                     <span style={{ marginRight: '5px' }}>{icon}</span>

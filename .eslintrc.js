@@ -31,5 +31,6 @@ module.exports = {
         'react/jsx-indent-props': ['error', 4],
         'max-len': ['error', { code: 150 }],
         'no-shadow': 0,
+        'no-unused-expressions': 0,
     },
 };

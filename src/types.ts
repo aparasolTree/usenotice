@@ -12,7 +12,7 @@ export interface Notice {
     id: string;
     content: string | TemplateFn;
     visible: boolean;
-    set: (options: Pick<Notice, 'content' | 'icon'>) => void;
+    set: (options: Pick<Notice, 'content' | 'icon' | 'duration' | 'animate' >) => void;
     remove: () => void;
 
     icon?: string | React.ReactNode;
@@ -30,12 +30,15 @@ export type ErrorOptions = Options;
 export type WarnOptions = Options;
 export type CustomOptions = Options;
 export interface LoadingOptions extends Options {
-    success: string,
-    error: string,
+    success: string | Pick<Notice, 'content' | 'icon' | 'duration' | 'animate' >,
+    error: string | Pick<Notice, 'content' | 'icon' | 'duration' | 'animate' >,
     loading: string,
 }
 
-export type UseNoticeOptions = Partial<Pick<Notice, 'duration' | 'animate' | 'position'>>;
+export type UseNoticeOptions = Partial<Pick<Notice, 'duration' | 'animate' | 'position'>> & {
+    className?: string;
+    style?: React.CSSProperties;
+};
 export type NoticeRefOptions = Partial<Pick<Notice, 'icon' | 'autoRemove' | 'position' | 'animate' | 'duration'>>;
 
 export interface NoticeRef {

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import type {
     Notice, NoticeRefOptions, TemplateFn,
 } from '../types';
-import { cretaeNotice } from '../utils/create';
+import { cretaeNotice } from '../utils';
 import { useNoticeContext } from './context';
 
 export default function useNoticer() {

@@ -22,12 +22,10 @@ export default function Notice({ notice }: { notice: NoticeItem }) {
 
     return (
         <NoticeContainer style={style} className={className}>
+            {icon && <span style={{ marginRight: '5px' }}>{icon}</span>}
             {typeof content === 'function' ? content(remove) : (
-                <>
-                    <span style={{ marginRight: '5px' }}>{icon}</span>
-                    <span>{content}</span>
-                </>
-            ) }
+                <span>{content}</span>
+            )}
         </NoticeContainer>
     );
 }

@@ -32,5 +32,6 @@ module.exports = {
         'max-len': ['error', { code: 150 }],
         'no-shadow': 0,
         'no-unused-expressions': 0,
+        'import/prefer-default-export': 0,
     },
 };

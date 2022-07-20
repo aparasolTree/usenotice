@@ -1,15 +1,17 @@
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import ReactDom from 'react-dom/client';
 import type {
-    IconOptions, CustomOptions,
-    LoadingOptions, NoticeRef, SuccessOptions, TemplateFn, UseNoticeOptions, WarnOptions,
+    LoadingOptions, MethodOptions, UseNoticeOptions,
+    NoticeRef, TemplateFn, UseNoticeReturn, LoadingReturn, LoadingNotice,
 } from '../types';
 import Notice from './notice-manger';
-import Success from '../components/Icon/success';
-import Error from '../components/Icon/error';
-import Loading from '../components/Icon/loading';
-import Warn from '../components/Icon/warn';
+import {
+    Success, Warn, Error, Loading,
+} from '../components/Icon';
 import { NoticeProvider } from './context';
+import { getObject, setNotice } from '../utils';
+
+const IconMap = { error: Error, success: Success, warn: Warn };
 
 export default function useNotice(options: UseNoticeOptions = {}) {
     const ref = useRef<NoticeRef>(null);
@@ -28,42 +30,54 @@ export default function useNotice(options: UseNoticeOptions = {}) {
     }, []);
 
     return useMemo(() => {
-        const success = (content: string, options: SuccessOptions = {}) => { ref.current?.addNotice(content, { icon: <Success />, ...options }); };
-        const error = (content: string, options: ErrorOptions = {}) => { ref.current?.addNotice(content, { icon: <Error />, ...options }); };
-        const warn = (content: string, options: WarnOptions = {}) => { ref.current?.addNotice(content, { icon: <Warn />, ...options }); };
-        const icon = (content: string, options: IconOptions) => { ref.current?.addNotice(content, options); };
-        const loading = (asyncFunc: () => Promise<any>, options: LoadingOptions) => {
+        const basicNoticeMetohd = Object.fromEntries(['success', 'error', 'warn'].map((method) => [
+            method, (content: string, options: MethodOptions) => {
+                const Icon = IconMap[method];
+                ref.current?.addNotice(content, { icon: <Icon />, ...options });
+            },
+        ]));
+
+        const loading = (content: string, options: MethodOptions = {}) => {
+            const loadingNotice = ref.current!.addNotice(content, { icon: <Loading />, ...options, autoRemove: false });
+            const basicLoading = Object.fromEntries(['success', 'error', 'warn'].map((method) => [
+                method, (options: LoadingNotice | string) => {
+                    const Icon = IconMap[method];
+                    setNotice(loadingNotice, { icon: <Icon />, ...(getObject(options, 'content')) });
+                },
+            ]));
+            const custom = (template: TemplateFn, options: MethodOptions = {}) => {
+                const opt = { content: template, ...options };
+                return setNotice(loadingNotice, opt);
+            };
+
+            return {
+                custom, ...basicLoading,
+            } as LoadingReturn;
+        };
+
+        const promise = async (asyncFunc: () => Promise<any>, options: LoadingOptions) => {
             const { addNotice } = ref.current || {};
             const {
-                loading, success, error, ...loadingOptions
+                loading: loadingContent, success, error, ...loadingOptions
             } = options;
+
             if (addNotice) {
-                const loadingNotice = addNotice(loading, { icon: <Loading />, autoRemove: false, ...loadingOptions });
-                asyncFunc().then(() => {
-                    const isObj = typeof success === 'object' && success !== null;
-                    if (isObj) {
-                        loadingNotice.set({ icon: <Success />, ...success });
-                    } else {
-                        loadingNotice.set({ icon: <Success />, content: success });
-                    }
-                    setTimeout(() => loadingNotice.remove(), isObj ? (success.duration || 1500) : 1500);
-                }).catch(() => {
-                    const isObj = typeof error === 'object' && error !== null;
-                    if (isObj) {
-                        loadingNotice.set({ icon: <Error />, ...error });
-                    } else {
-                        loadingNotice.set({ content: error, icon: <Error /> });
-                    }
-                    setTimeout(() => loadingNotice.remove(), isObj ? (error.duration || 1500) : 1500);
-                });
+                const actions = loading(loadingContent, loadingOptions);
+                try {
+                    await asyncFunc();
+                    actions.success(success);
+                } catch {
+                    actions.error(error);
+                }
             }
         };
-        const custom = (template: TemplateFn, options: CustomOptions = {}) => {
+
+        const custom = (template: TemplateFn, options: MethodOptions = {}) => {
             ref.current?.addNotice(template, { autoRemove: false, ...options });
         };
 
         return {
-            success, error, loading, warn, custom, icon,
-        };
+            promise, custom, loading, ...basicNoticeMetohd,
+        } as UseNoticeReturn;
     }, []);
 }

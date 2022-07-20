@@ -2,7 +2,7 @@ import React, { useImperativeHandle } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 import type { Notice as NoticeType, NoticeRef } from '../types';
-import { createAnimate, createRefRect, createStyle } from '../utils/create';
+import { createAnimate, createRefRect, createStyle } from '../utils';
 import Notice from '../components/Notice';
 import useNoticer from './use-noticer';
 

@@ -1,6 +1,6 @@
 <h1 align="center">useNotice</h1>
 
-使用 `usenotice` 为 React 应用程序添加标量的通知
+使用 `usenotice` 为 React 应用程序添加漂亮的通知
 
 ## 安装
 - ### yarn

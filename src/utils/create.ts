@@ -12,14 +12,17 @@ export const cretaeNotice = (content: string | TemplateFn, options: NoticeRefOpt
         position,
         animate,
         duration,
+        className, style,
     } = { ...defaultOptions, ...options };
 
     return {
         icon,
+        style,
         animate,
         content,
         position,
         duration,
+        className,
         autoRemove,
         id: genId(),
         visible: true,

@@ -47,9 +47,10 @@ export default function useNoticer() {
                     icon && (notice.icon = icon);
                     animate && (notice.animate = animate);
                     duration && (notice.duration = duration);
+                    return [...prev];
                 }
 
-                return [...prev];
+                return prev;
             });
 
             if (newNotice.autoRemove) {

@@ -30,21 +30,29 @@ export default function useNotice(options: UseNoticeOptions = {}) {
     }, []);
 
     return useMemo(() => {
-        const basicNoticeMetohd = Object.fromEntries(['success', 'error', 'warn'].map((method) => [
-            method, (content: string, options: MethodOptions) => {
-                const Icon = IconMap[method];
-                ref.current?.addNotice(content, { icon: <Icon />, ...options });
-            },
-        ]));
-
-        const loading = (content: string, options: MethodOptions = {}) => {
-            const loadingNotice = ref.current!.addNotice(content, { icon: <Loading />, ...options, autoRemove: false });
-            const basicLoading = Object.fromEntries(['success', 'error', 'warn'].map((method) => [
-                method, (options: LoadingNotice | string) => {
+        const basicNoticeMetohd = Object.fromEntries(['success', 'error', 'warn']
+            .map((method) => [
+                method, (content: string, options: MethodOptions) => {
+                    if (typeof content === 'function') return;
                     const Icon = IconMap[method];
-                    setNotice(loadingNotice, { icon: <Icon />, ...(getObject(options, 'content')) });
+                    ref.current?.addNotice(content, { icon: <Icon />, ...options });
                 },
             ]));
+
+        const loading = (content: string, options: MethodOptions = {}) => {
+            const loadingNotice = ref.current!.addNotice(content, {
+                icon: <Loading />, ...options, autoRemove: false,
+            });
+            const basicLoading = Object.fromEntries(['success', 'error', 'warn']
+                .map((method) => [
+                    method, (options: LoadingNotice | string) => {
+                        const Icon = IconMap[method];
+                        setNotice(loadingNotice, {
+                            icon: <Icon />,
+                            ...(getObject(options, 'content')),
+                        });
+                    },
+                ]));
             const custom = (template: TemplateFn, options: MethodOptions = {}) => {
                 const opt = { content: template, ...options };
                 return setNotice(loadingNotice, opt);
@@ -73,11 +81,22 @@ export default function useNotice(options: UseNoticeOptions = {}) {
         };
 
         const custom = (template: TemplateFn, options: MethodOptions = {}) => {
-            ref.current?.addNotice(template, { autoRemove: false, ...options });
+            if (typeof template === 'function') {
+                ref.current?.addNotice(template, { autoRemove: false, ...options });
+            }
+        };
+
+        const blank = (content: string, options: MethodOptions = {}) => {
+            if (typeof content === 'function') return;
+            ref.current?.addNotice(content, options);
         };
 
         return {
-            promise, custom, loading, ...basicNoticeMetohd,
+            promise,
+            custom,
+            loading,
+            blank,
+            ...basicNoticeMetohd,
         } as UseNoticeReturn;
     }, []);
 }

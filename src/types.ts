@@ -22,10 +22,13 @@ export interface Notice {
     height?: number;
     animate?: Animate;
     autoRemove?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
 }
 
 export interface UseNoticeReturn {
     warn: (content: string, options?: MethodOptions) => void;
+    blank: (content: string, options?: BlankOptions) => void;
     error: (content: string, options?: MethodOptions) => void;
     loading: (content: string, options?: MethodOptions) => any;
     success: (content: string, options?: MethodOptions) => void;
@@ -33,7 +36,8 @@ export interface UseNoticeReturn {
     promise: (asyncFunc: () => Promise<any>, options?: LoadingOptions) => Promise<void>;
 }
 
-export type MethodOptions = Partial<Pick<Notice, 'duration' | 'animate' | 'position'>>;
+export type MethodOptions = Partial<Pick<Notice, 'duration' | 'animate' | 'position' | 'className' | 'style'>>;
+export type BlankOptions = SetNotice & Notice['icon'];
 export type LoadingNotice = SetNotice;
 export interface LoadingOptions extends MethodOptions {
     success: string | LoadingNotice,
@@ -47,11 +51,11 @@ export type LoadingReturn = {
     custom: (template: TemplateFn, options?: MethodOptions) => void;
 }
 
-export type UseNoticeOptions = MethodOptions & {
-    className?: string;
-    style?: React.CSSProperties;
-};
-export type NoticeRefOptions = Partial<Pick<Notice, 'icon' | 'autoRemove' | 'position' | 'animate' | 'duration'>>;
+export type UseNoticeOptions = MethodOptions
+export type NoticeRefOptions = Partial<Pick<
+    Notice,
+    'icon' | 'autoRemove' | 'position' | 'animate' | 'duration' | 'className' | 'style'
+>>;
 export interface NoticeRef {
     addNotice: (content: Notice['content'], options: NoticeRefOptions) => Notice;
 }

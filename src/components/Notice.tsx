@@ -21,10 +21,10 @@ export default function Notice({ notice }: { notice: NoticeItem }) {
     const { content, icon, remove } = notice;
 
     return (
-        <NoticeContainer style={style} className={className}>
-            {icon && <span style={{ marginRight: '5px' }}>{icon}</span>}
+        <NoticeContainer style={notice.style || style} className={notice.className || className}>
+            {icon && <span style={{ marginRight: '5px' }} className="notice-icon">{icon}</span>}
             {typeof content === 'function' ? content(remove) : (
-                <span>{content}</span>
+                <span className="notice-content">{content}</span>
             )}
         </NoticeContainer>
     );
